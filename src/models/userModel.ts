@@ -15,7 +15,6 @@ export interface IUser extends Document {
   comparePassword(userPassword: string): Promise<boolean>;
 }
 
-
 const UserSchema = new Schema(
   {
     username: {
@@ -26,24 +25,26 @@ const UserSchema = new Schema(
     password: {
       type: String,
       required: true,
-      minlength: 6
+      minlength: 6,
     },
     email: {
       type: String,
       required: true,
       validate: [validator.isEmail, "המייל לא תקין"],
-      match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please fill a valid email address']
+      match: [
+        /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
+        "Please fill a valid email address",
+      ],
     },
     profile: {
-        bio:{
-          type: String,
-          default: ''
-        },
-        socialLinks: {
-          type: [String],
-          validate: [validator.isURL, "הלינק לא תקין"],
-          default:[]
-        },
+      bio: {
+        type: String,
+        default: "",
+      },
+      socialLinks: {
+        type: [String],
+        default: [],
+      },
     },
     posts: {
       type: [Schema.Types.ObjectId],
@@ -56,9 +57,9 @@ const UserSchema = new Schema(
 // אחראית על הצפנת הסיסמה
 UserSchema.pre<IUser>("save", async function (next) {
   if (!this.isModified("password")) return next();
-  
+
   this.password = await bcrypt.hash(this.password, 10);
-  
+
   next();
 });
 
@@ -73,7 +74,4 @@ UserSchema.methods.comparePassword = async function (
 UserSchema.index({ username: 1 });
 UserSchema.index({ posts: 1 });
 
-
-
 export default mongoose.model<IUser>("User", UserSchema);
-

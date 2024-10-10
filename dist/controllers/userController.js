@@ -9,11 +9,40 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getUser = exports.getUsers = exports.createUser = void 0;
-const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () { });
-exports.createUser = createUser;
-const getUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () { });
-exports.getUsers = getUsers;
-const getUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () { });
+exports.deleteUser = exports.updatToeUser = exports.getUsersWithPosts = exports.getUsers = exports.getUser = void 0;
+const userService_1 = require("../services/userService");
+const getUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = yield (0, userService_1.getUserById)(req.params.id);
+    if (!user) {
+        res.status(404).json({ messege: "User not found" });
+    }
+    res.json(user);
+});
 exports.getUser = getUser;
+const getUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const users = yield (0, userService_1.getAllUsers)();
+    res.json(users);
+});
+exports.getUsers = getUsers;
+const getUsersWithPosts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const users = yield (0, userService_1.getAllUsersWithPosts)();
+    res.json(users);
+});
+exports.getUsersWithPosts = getUsersWithPosts;
+const updatToeUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = yield (0, userService_1.updateUser)(req.params.id, req.body);
+    if (!user) {
+        res.status(404).json({ messege: "User not found" });
+    }
+    res.json(user);
+});
+exports.updatToeUser = updatToeUser;
+const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = yield (0, userService_1.deleteToUser)(req.params.id);
+    if (!user) {
+        res.status(404).json({ messege: "User not found" });
+    }
+    res.json({ message: "User Deleted!" });
+});
+exports.deleteUser = deleteUser;
 // Optionally, add DELETE and EDIT functions
