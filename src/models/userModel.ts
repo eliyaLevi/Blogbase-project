@@ -12,7 +12,6 @@ export interface IUser extends Document {
     socialLinks?: string[];
   };
   posts: Types.ObjectId[];
-  post: IPost["_id"];
   comparePassword(userPassword: string): Promise<boolean>;
 }
 
@@ -48,7 +47,7 @@ const UserSchema = new Schema(
     },
     posts: {
       type: [Schema.Types.ObjectId],
-      ref: "post",
+      ref: "posts",
     },
   },
   { timestamps: true }
