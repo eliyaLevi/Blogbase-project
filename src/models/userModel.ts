@@ -1,5 +1,7 @@
 import mongoose, { Schema, Document, Types } from "mongoose";
 import validator from "validator";
+import bcrypt from "bcrypt";
+import { IPost } from "./postModel";
 
 export interface IUser extends Document {
   username: string;
@@ -10,6 +12,8 @@ export interface IUser extends Document {
     socialLinks?: string[];
   };
   posts: Types.ObjectId[];
+  post: IPost["_id"];
+  comparePassword(userPassword: string): Promise<boolean>;
 }
 
 
@@ -23,39 +27,28 @@ const UserSchema = new Schema(
     password: {
       type: String,
       required: true,
+      minlength: 6
     },
     email: {
       type: String,
       required: true,
+      validate: [validator.isEmail, "המייל לא תקין"],
       match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please fill a valid email address']
     },
-    role: {
-      type: String,
-      enum: ["employee", "manager"],
-      default: "employee",
+    profile: {
+        bio:{
+          type: String,
+          default: ''
+        },
+        socialLinks: {
+          type: [String],
+          validate: [validator.isURL, "הלינק לא תקין"],
+          default:[]
+        },
     },
-    salary: {
-      type: Number,
-      required: true,
-    },
-    yearsOfExperience: {
-      type: Number,
-      required: true,
-    },
-    startDate: {
-      type: Date,
-      required: true,
-    },
-    age: {
-      type: Number,
-      required: true,
-    },
-    lastLogin: {
-      type: Date,
-    },
-    department: {
-      type: Schema.Types.ObjectId,
-      ref: "department",
+    posts: {
+      type: [Schema.Types.ObjectId],
+      ref: "post",
     },
   },
   { timestamps: true }
@@ -78,9 +71,9 @@ UserSchema.methods.comparePassword = async function (
 };
 
 // מגדיר מאפיין ספציפי בסכסמה כאינדקס
-UserSchema.index({ role: 1 });
 UserSchema.index({ username: 1 });
-UserSchema.index({ salary: 1 });
+UserSchema.index({ posts: 1 });
+
 
 
 export default mongoose.model<IUser>("User", UserSchema);
